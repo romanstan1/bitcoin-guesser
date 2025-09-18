@@ -2,7 +2,7 @@ import styled from "styled-components";
 import Timestamp from "./Timestamp";
 import { type User as AuthUser } from "firebase/auth";
 import { type User, type BitcoinPriceData, type Guess } from "../services";
-import { ChevronUp, ChevronDown, Clock } from "lucide-react";
+import { ChevronUp, ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
 
 const Container = styled.div`
@@ -56,14 +56,6 @@ const MainContent = styled.div`
   gap: 1rem;
 `;
 
-const GameStats = styled.div`
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-`;
-
-// Generic reusable components
 const Card = styled.div<{ size?: "small" | "medium" | "large" }>`
   background: ${({ theme }) => theme.colors.background.secondary};
   padding: ${({ size = "medium" }) =>
@@ -102,19 +94,11 @@ const Value = styled.div<ValueProps>`
   gap: 0.5rem;
 `;
 
-const Label = styled.div<{ margin?: boolean; size?: "small" | "normal" }>`
-  font-size: ${({ size = "normal" }) =>
-    size === "small" ? "0.875rem" : "1rem"};
+const Label = styled.div`
+  font-size: 1rem;
   color: ${({ theme }) => theme.colors.text.secondary};
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: ${({ margin }) => (margin ? "1.5rem" : "0")};
-`;
-
-const FlexCard = styled(Card)`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
 `;
 
 const OrText = styled.div`
@@ -160,22 +144,6 @@ const GameButton = styled.button`
   }
 `;
 
-const DarkCard = styled(Card)`
-  background: ${({ theme }) => theme.colors.primary[900]};
-  border: 1px solid ${({ theme }) => theme.colors.primary[700]};
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 1rem;
-`;
-
-const DarkInlineCard = styled(DarkCard)`
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-`;
-
 interface GuessStatusProps {
   guess: Guess;
   guessTime: string;
@@ -200,20 +168,15 @@ function GuessStatus({ guess, guessTime, priceAtGuess }: GuessStatusProps) {
   }, [guessTime]);
 
   return (
-    <FlexCard size="large">
+    <Card>
       <div>
         <Label>Your Guess</Label>
         <Value size="medium">
-          {guess === "higher" ? (
-            <ChevronUp size={24} />
-          ) : (
-            <ChevronDown size={24} />
-          )}
           {guess.charAt(0).toUpperCase() + guess.slice(1)}
         </Value>
       </div>
 
-      <DarkCard>
+      <Card>
         <Value size="small" color="bitcoin" mono>
           $
           {priceAtGuess.toLocaleString("en-US", {
@@ -222,18 +185,15 @@ function GuessStatus({ guess, guessTime, priceAtGuess }: GuessStatusProps) {
           })}
         </Value>
         <Label>Price at Guess</Label>
-      </DarkCard>
+      </Card>
 
-      <DarkInlineCard>
-        <Clock size={20} />
-        <div>
-          <Value size="small" color="secondary" mono>
-            {secondsElapsed}s
-          </Value>
-          <Label size="small">Time Elapsed</Label>
-        </div>
-      </DarkInlineCard>
-    </FlexCard>
+      <Card>
+        <Value size="small" color="secondary" mono>
+          {secondsElapsed}s
+        </Value>
+        <Label>Time Elapsed</Label>
+      </Card>
+    </Card>
   );
 }
 
@@ -260,12 +220,10 @@ function GameScreen({
       </Header>
 
       <MainContent>
-        <GameStats>
-          <Card size="large">
-            <Value size="large">{user.score}</Value>
-            <Label>Current Score</Label>
-          </Card>
-        </GameStats>
+        <Card>
+          <Value size="large">{user.score}</Value>
+          <Label>Current Score</Label>
+        </Card>
 
         <Card>
           <Value size="medium" color="bitcoin">
@@ -276,7 +234,7 @@ function GameScreen({
                 })}`
               : "Loading..."}
           </Value>
-          <Label margin>Bitcoin Price</Label>
+          <Label>Bitcoin Price</Label>
           {bitcoinPrice && (
             <Timestamp date={bitcoinPrice.timestamp} prefix="Last updated:" />
           )}
