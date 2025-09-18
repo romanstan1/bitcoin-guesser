@@ -10,6 +10,8 @@ import {
   getUser,
   createUser,
   fetchBitcoinPrice,
+  updateUser,
+  type Guess,
 } from "./services";
 import { type User as AuthUser } from "firebase/auth";
 import { type User, type BitcoinPriceData } from "./services";
@@ -37,7 +39,7 @@ function App() {
       setBitcoinPrice(priceData);
     } catch (error) {
       console.error("Failed to fetch Bitcoin price:", error);
-      // Keep displaying the previous price on error
+      // do nothing
     }
   }, []);
 
@@ -105,6 +107,35 @@ function App() {
     }
   };
 
+  const handleMakeGuess = useCallback(
+    async (guess: Guess) => {
+      if (!authedUser || !user) return false;
+
+      try {
+        // Fetch latest bitcoin price
+        const bitcoinData = await fetchBitcoinPrice();
+
+        // Update user data with new guess info
+        const updatedUserData: User = {
+          ...user,
+          priceAtLastGuess: bitcoinData.price,
+          lastGuessTime: bitcoinData.timestamp,
+          guess: guess,
+        };
+
+        await updateUser(authedUser.uid, updatedUserData);
+
+        setUser(updatedUserData);
+
+        return true;
+      } catch (error) {
+        console.error("Error making guess:", error);
+        return false;
+      }
+    },
+    [authedUser, user]
+  );
+
   if (loading) {
     return (
       <Container>
@@ -122,6 +153,7 @@ function App() {
         user={user}
         onSignOut={handleSignOut}
         bitcoinPrice={bitcoinPrice}
+        onMakeGuess={handleMakeGuess}
       />
     );
   }

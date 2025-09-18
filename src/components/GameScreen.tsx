@@ -1,8 +1,9 @@
 import styled from "styled-components";
 import Timestamp from "./Timestamp";
 import { type User as AuthUser } from "firebase/auth";
-import { type User, type BitcoinPriceData } from "../services";
-import { ChevronUp, ChevronDown } from "lucide-react";
+import { type User, type BitcoinPriceData, type Guess } from "../services";
+import { ChevronUp, ChevronDown, Clock } from "lucide-react";
+import { useState, useEffect } from "react";
 
 const Container = styled.div`
   position: relative;
@@ -62,42 +63,58 @@ const GameStats = styled.div`
   gap: 2rem;
 `;
 
-const StatCard = styled.div`
+// Generic reusable components
+const Card = styled.div<{ size?: "small" | "medium" | "large" }>`
   background: ${({ theme }) => theme.colors.background.secondary};
-  padding: 2rem;
-  border-radius: 12px;
-  border: 1px solid ${({ theme }) => theme.colors.primary[800]};
-  min-width: 400px;
-`;
-
-const StatValue = styled.div`
-  font-size: 3rem;
-  font-weight: bold;
-  line-height: 1.4;
-  color: ${({ theme }) => theme.colors.primary[400]};
-`;
-
-const StatLabel = styled.div`
-  font-size: 1rem;
-  color: ${({ theme }) => theme.colors.text.secondary};
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-`;
-
-const BitcoinPrice = styled.div`
-  background: ${({ theme }) => theme.colors.background.secondary};
-  padding: 1.5rem 2rem;
+  padding: ${({ size = "medium" }) =>
+    size === "small" ? "1rem" : size === "large" ? "2rem" : "1.5rem 2rem"};
   border-radius: 12px;
   border: 1px solid ${({ theme }) => theme.colors.primary[800]};
   text-align: center;
-  margin-bottom: 1rem;
   min-width: 400px;
 `;
 
-const PriceValue = styled.div`
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #f7931a;
+interface ValueProps {
+  size?: "small" | "medium" | "large";
+  color?: "primary" | "bitcoin" | "secondary";
+  mono?: boolean;
+}
+
+const Value = styled.div<ValueProps>`
+  font-family: ${({ mono }) =>
+    mono
+      ? '"SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Consolas", "Courier New", monospace'
+      : "inherit"};
+  font-size: ${({ size = "medium" }) =>
+    size === "small" ? "1.25rem" : size === "large" ? "3rem" : "2.5rem"};
+  font-weight: ${({ mono }) => (mono ? "600" : "bold")};
+  line-height: 1.4;
+  color: ${({ theme, color = "primary" }) =>
+    color === "bitcoin"
+      ? "#f7931a"
+      : color === "secondary"
+        ? theme.colors.primary[300]
+        : theme.colors.primary[400]};
+  letter-spacing: ${({ mono }) => (mono ? "0.025em" : "normal")};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+`;
+
+const Label = styled.div<{ margin?: boolean; size?: "small" | "normal" }>`
+  font-size: ${({ size = "normal" }) =>
+    size === "small" ? "0.875rem" : "1rem"};
+  color: ${({ theme }) => theme.colors.text.secondary};
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: ${({ margin }) => (margin ? "1.5rem" : "0")};
+`;
+
+const FlexCard = styled(Card)`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 `;
 
 const OrText = styled.div`
@@ -110,14 +127,6 @@ const OrText = styled.div`
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-`;
-
-const PriceLabel = styled.div`
-  font-size: 1rem;
-  color: ${({ theme }) => theme.colors.text.secondary};
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 1.5rem;
 `;
 
 const ButtonContainer = styled.div`
@@ -151,11 +160,89 @@ const GameButton = styled.button`
   }
 `;
 
+const DarkCard = styled(Card)`
+  background: ${({ theme }) => theme.colors.primary[900]};
+  border: 1px solid ${({ theme }) => theme.colors.primary[700]};
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+`;
+
+const DarkInlineCard = styled(DarkCard)`
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+`;
+
+interface GuessStatusProps {
+  guess: Guess;
+  guessTime: string;
+  priceAtGuess: number;
+}
+
+function GuessStatus({ guess, guessTime, priceAtGuess }: GuessStatusProps) {
+  const [secondsElapsed, setSecondsElapsed] = useState(0);
+
+  useEffect(() => {
+    const updateTimer = () => {
+      const guessDate = new Date(guessTime);
+      const now = new Date();
+      const elapsed = Math.floor((now.getTime() - guessDate.getTime()) / 1000);
+      setSecondsElapsed(elapsed);
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+
+    return () => clearInterval(interval);
+  }, [guessTime]);
+
+  return (
+    <FlexCard size="large">
+      <div>
+        <Label>Your Guess</Label>
+        <Value size="medium">
+          {guess === "higher" ? (
+            <ChevronUp size={24} />
+          ) : (
+            <ChevronDown size={24} />
+          )}
+          {guess.charAt(0).toUpperCase() + guess.slice(1)}
+        </Value>
+      </div>
+
+      <DarkCard>
+        <Value size="small" color="bitcoin" mono>
+          $
+          {priceAtGuess.toLocaleString("en-US", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </Value>
+        <Label>Price at Guess</Label>
+      </DarkCard>
+
+      <DarkInlineCard>
+        <Clock size={20} />
+        <div>
+          <Value size="small" color="secondary" mono>
+            {secondsElapsed}s
+          </Value>
+          <Label size="small">Time Elapsed</Label>
+        </div>
+      </DarkInlineCard>
+    </FlexCard>
+  );
+}
+
 interface GameScreenProps {
   authedUser: AuthUser;
   user: User;
   onSignOut: () => void;
   bitcoinPrice: BitcoinPriceData | null;
+  onMakeGuess: (guess: Guess) => Promise<boolean>;
 }
 
 function GameScreen({
@@ -163,6 +250,7 @@ function GameScreen({
   user,
   onSignOut,
   bitcoinPrice,
+  onMakeGuess,
 }: GameScreenProps) {
   return (
     <Container>
@@ -173,35 +261,46 @@ function GameScreen({
 
       <MainContent>
         <GameStats>
-          <StatCard>
-            <StatValue>{user.score}</StatValue>
-            <StatLabel>Current Score</StatLabel>
-          </StatCard>
+          <Card size="large">
+            <Value size="large">{user.score}</Value>
+            <Label>Current Score</Label>
+          </Card>
         </GameStats>
 
-        <BitcoinPrice>
-          <PriceValue>
+        <Card>
+          <Value size="medium" color="bitcoin">
             {bitcoinPrice
-              ? `$${bitcoinPrice.price.toLocaleString()}`
+              ? `$${bitcoinPrice.price.toLocaleString("en-US", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}`
               : "Loading..."}
-          </PriceValue>
-          <PriceLabel>Bitcoin Price</PriceLabel>
+          </Value>
+          <Label margin>Bitcoin Price</Label>
           {bitcoinPrice && (
             <Timestamp date={bitcoinPrice.timestamp} prefix="Last updated:" />
           )}
-        </BitcoinPrice>
+        </Card>
 
-        <ButtonContainer>
-          <GameButton>
-            <ChevronUp size={20} />
-            Higher
-          </GameButton>
-          <OrText>or</OrText>
-          <GameButton>
-            <ChevronDown size={20} />
-            Lower
-          </GameButton>
-        </ButtonContainer>
+        {user.guess && user.lastGuessTime && user.priceAtLastGuess ? (
+          <GuessStatus
+            guess={user.guess}
+            guessTime={user.lastGuessTime}
+            priceAtGuess={user.priceAtLastGuess}
+          />
+        ) : (
+          <ButtonContainer>
+            <GameButton onClick={() => onMakeGuess("higher")}>
+              <ChevronUp size={20} />
+              Higher
+            </GameButton>
+            <OrText>or</OrText>
+            <GameButton onClick={() => onMakeGuess("lower")}>
+              <ChevronDown size={20} />
+              Lower
+            </GameButton>
+          </ButtonContainer>
+        )}
       </MainContent>
     </Container>
   );

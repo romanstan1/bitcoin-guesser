@@ -4,21 +4,16 @@ import {
   onAuthStateChanged,
   type User as AuthUser,
 } from "firebase/auth";
-import {
-  doc,
-  DocumentReference,
-  getDoc,
-  setDoc,
-  updateDoc,
-} from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { auth, googleProvider, db } from "./firebase";
+
+export type Guess = "higher" | "lower";
 
 export type User = {
   score: number;
   priceAtLastGuess: number | null;
   lastGuessTime: string | null;
-  guess: "higher" | "lower" | null;
-  guessStatus: "resolved" | "pending" | null;
+  guess: Guess | null;
 };
 
 export const getUserRef = (userId: string) => {
@@ -33,7 +28,6 @@ export const createUser = async (userId: string) => {
       priceAtLastGuess: null,
       lastGuessTime: null,
       guess: null,
-      guessStatus: null,
     });
     return true;
   } catch {
@@ -47,7 +41,8 @@ export const getUser = async (userId: string): Promise<User | null> => {
   return userDoc.data() as User | null;
 };
 
-export const updateUser = async (userRef: DocumentReference, data: User) => {
+export const updateUser = async (userId: string, data: User) => {
+  const userRef = getUserRef(userId);
   const updatedUser = await updateDoc(userRef, data);
   return updatedUser;
 };
