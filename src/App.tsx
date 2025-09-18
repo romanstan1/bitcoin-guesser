@@ -4,9 +4,9 @@ import styled from 'styled-components'
 import Text from './components/Text'
 import LoginScreen from './components/LoginScreen'
 import GameScreen from './components/GameScreen'
-import { signInWithGoogle, signOut, onAuthStateChange, getUser, createUser } from './services'
+import { signInWithGoogle, signOut, onAuthStateChange, getUser, createUser, fetchBitcoinPrice } from './services'
 import { type User as AuthUser } from 'firebase/auth'
-import { type User } from './services'
+import { type User, type BitcoinPriceData } from './services'
 
 const Container = styled.div`
   display: flex;
@@ -21,7 +21,14 @@ function App() {
   const [authedUser, setAuthedUser] = useState<AuthUser | null>(null)
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const [bitcoinPrice, setBitcoinPrice] = useState<BitcoinPriceData | null>(null)
 
+  const handleFetchBitcoinPrice = useCallback(async () => {
+    const priceData = await fetchBitcoinPrice()
+    if (priceData) {
+      setBitcoinPrice(priceData)
+    }
+  }, [])
 
   const handleCreateUser = useCallback(async (authUser: AuthUser) => {
     const res = await createUser(authUser.uid)
@@ -51,13 +58,14 @@ function App() {
 
       if(authUser) {
         handleUserChange(authUser)
+        handleFetchBitcoinPrice()
       }
 
       setLoading(false)
     })
 
     return () => unsubscribe()
-  }, [handleUserChange])
+  }, [handleUserChange, handleFetchBitcoinPrice])
 
   const handleSignIn = async () => {
     try {
@@ -84,7 +92,7 @@ function App() {
   }
 
   if (authedUser && user) {
-    return <GameScreen user={authedUser} userData={user} onSignOut={handleSignOut} />
+    return <GameScreen authedUser={authedUser} user={user} onSignOut={handleSignOut} bitcoinPrice={bitcoinPrice} />
   }
 
   return <LoginScreen onSignIn={handleSignIn} />

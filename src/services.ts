@@ -51,18 +51,6 @@ export const signInWithGoogle = async () => {
     const result = await signInWithPopup(auth, googleProvider);
     const authedUser = result.user;
 
-    // // Check if user record exists in Firestore
-    // const userDocRef = doc(db, "users", user.uid);
-    // const userDoc = await getDoc(userDocRef);
-
-    // // If user record doesn't exist, create it with default values
-    // if (!userDoc.exists()) {
-    //   await setDoc(userDocRef, {
-    //     score: 0,
-    //     lastGuess: null,
-    //   });
-    // }
-
     return authedUser;
   } catch (error) {
     console.error("Error signing in with Google:", error);
@@ -83,4 +71,31 @@ export const onAuthStateChange = (
   callback: (user: AuthUser | null) => void
 ) => {
   return onAuthStateChanged(auth, callback);
+};
+
+export type BitcoinPriceData = {
+  price: number;
+  timestamp: string;
+};
+
+export const fetchBitcoinPrice = async (): Promise<BitcoinPriceData | null> => {
+  try {
+    const response = await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return {
+      price: data.bitcoin.usd,
+      timestamp: new Date().toISOString(),
+    };
+  } catch (error) {
+    console.error("Error fetching Bitcoin price:", error);
+    return null;
+  }
 };

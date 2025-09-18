@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import Text from './Text'
 import { type User as AuthUser } from 'firebase/auth'
-import { type User } from '../services'
+import { type User, type BitcoinPriceData } from '../services'
 
 const Container = styled.div`
   position: relative;
@@ -95,7 +95,7 @@ const BitcoinPrice = styled.div`
 const PriceValue = styled.div`
   font-size: 2.5rem;
   font-weight: bold;
-  color: #f7931a; /* Bitcoin orange */
+  color: #f7931a;
   margin-bottom: 0.5rem;
 `
 
@@ -104,6 +104,12 @@ const PriceLabel = styled.div`
   color: ${({ theme }) => theme.colors.text.secondary};
   text-transform: uppercase;
   letter-spacing: 0.05em;
+`
+
+const TimestampText = styled.div`
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #94A3B8;
 `
 
 const ButtonContainer = styled.div`
@@ -133,22 +139,23 @@ const GameButton = styled.button`
   }
 `
 
-interface GameScreenProps {
-  user: AuthUser
-  userData: User
-  onSignOut: () => void
+const formatTimestamp = (timestamp: string | null) => {
+  if (!timestamp) return 'No previous guess'
+  return new Date(timestamp).toLocaleString()
 }
 
-function GameScreen({ user, userData, onSignOut }: GameScreenProps) {
-  const formatTimestamp = (timestamp: string | null) => {
-    if (!timestamp) return 'No previous guess'
-    return new Date(timestamp).toLocaleString()
-  }
+interface GameScreenProps {
+  authedUser: AuthUser
+  user: User
+  onSignOut: () => void
+  bitcoinPrice: BitcoinPriceData | null
+}
 
+function GameScreen({ authedUser, user, onSignOut, bitcoinPrice }: GameScreenProps) {
   return (
     <Container>
       <Header>
-        <UserEmail>{user.email}</UserEmail>
+        <UserEmail>{authedUser.email}</UserEmail>
         <SignOutButton onClick={onSignOut}>
           Sign Out
         </SignOutButton>
@@ -157,29 +164,37 @@ function GameScreen({ user, userData, onSignOut }: GameScreenProps) {
       <MainContent>
         <GameStats>
           <StatCard>
-            <StatValue>{userData.score}</StatValue>
+            <StatValue>{user.score}</StatValue>
             <StatLabel>Current Score</StatLabel>
           </StatCard>
 
           <StatCard>
             <Text variant="p1" color="#E2E8F0">
-              {formatTimestamp(userData.lastGuess)}
+              {formatTimestamp(user.lastGuess)}
             </Text>
             <StatLabel>Last Guess Time</StatLabel>
           </StatCard>
         </GameStats>
 
         <BitcoinPrice>
-          <PriceValue>$67,234.50</PriceValue>
-          <PriceLabel>Current Bitcoin Price</PriceLabel>
+          <PriceValue>
+            {bitcoinPrice ? `$${bitcoinPrice.price.toLocaleString()}` : 'Loading...'}
+          </PriceValue>
+          <PriceLabel>Bitcoin Price</PriceLabel>
+          {bitcoinPrice && (
+            <TimestampText>
+              Last updated: {new Date(bitcoinPrice.timestamp).toLocaleString()}
+            </TimestampText>
+          )}
         </BitcoinPrice>
 
         <ButtonContainer>
-          <GameButton>Higher</GameButton>
           <GameButton>Lower</GameButton>
+          <GameButton>Higher</GameButton>
         </ButtonContainer>
       </MainContent>
     </Container>
+
   )
 }
 
