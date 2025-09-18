@@ -84,7 +84,7 @@ function App() {
 
     const interval = setInterval(() => {
       handleFetchBitcoinPrice();
-    }, 5000); // refresh every 5 seconds
+    }, 10000); // refresh every 5 seconds
 
     return () => clearInterval(interval);
   }, [authedUser, handleFetchBitcoinPrice]);

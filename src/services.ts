@@ -15,7 +15,10 @@ import { auth, googleProvider, db } from "./firebase";
 
 export type User = {
   score: number;
-  lastGuess: string | null;
+  priceAtLastGuess: number | null;
+  lastGuessTime: string | null;
+  guess: "higher" | "lower" | null;
+  guessStatus: "resolved" | "pending" | null;
 };
 
 export const getUserRef = (userId: string) => {
@@ -27,7 +30,10 @@ export const createUser = async (userId: string) => {
   try {
     await setDoc(userRef, {
       score: 0,
-      lastGuess: null,
+      priceAtLastGuess: null,
+      lastGuessTime: null,
+      guess: null,
+      guessStatus: null,
     });
     return true;
   } catch {

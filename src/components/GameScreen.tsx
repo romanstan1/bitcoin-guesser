@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import Text from "./Text";
+import Timestamp from "./Timestamp";
 import { type User as AuthUser } from "firebase/auth";
 import { type User, type BitcoinPriceData } from "../services";
 import { ChevronUp, ChevronDown } from "lucide-react";
@@ -52,7 +52,7 @@ const MainContent = styled.div`
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  gap: 3rem;
+  gap: 1rem;
 `;
 
 const GameStats = styled.div`
@@ -73,8 +73,8 @@ const StatCard = styled.div`
 const StatValue = styled.div`
   font-size: 3rem;
   font-weight: bold;
+  line-height: 1.4;
   color: ${({ theme }) => theme.colors.primary[400]};
-  margin-bottom: 0.5rem;
 `;
 
 const StatLabel = styled.div`
@@ -98,7 +98,18 @@ const PriceValue = styled.div`
   font-size: 2.5rem;
   font-weight: bold;
   color: #f7931a;
-  margin-bottom: 0.5rem;
+`;
+
+const OrText = styled.div`
+  font-size: 1rem;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 `;
 
 const PriceLabel = styled.div`
@@ -106,12 +117,7 @@ const PriceLabel = styled.div`
   color: ${({ theme }) => theme.colors.text.secondary};
   text-transform: uppercase;
   letter-spacing: 0.05em;
-`;
-
-const TimestampText = styled.div`
-  margin-top: 0.5rem;
-  font-size: 0.875rem;
-  color: #94a3b8;
+  margin-bottom: 1.5rem;
 `;
 
 const ButtonContainer = styled.div`
@@ -145,11 +151,6 @@ const GameButton = styled.button`
   }
 `;
 
-const formatTimestamp = (timestamp: string | null) => {
-  if (!timestamp) return "No previous guess";
-  return new Date(timestamp).toLocaleString();
-};
-
 interface GameScreenProps {
   authedUser: AuthUser;
   user: User;
@@ -176,13 +177,6 @@ function GameScreen({
             <StatValue>{user.score}</StatValue>
             <StatLabel>Current Score</StatLabel>
           </StatCard>
-
-          <StatCard>
-            <Text variant="p1" color="#E2E8F0">
-              {formatTimestamp(user.lastGuess)}
-            </Text>
-            <StatLabel>Last Guess Time</StatLabel>
-          </StatCard>
         </GameStats>
 
         <BitcoinPrice>
@@ -193,20 +187,19 @@ function GameScreen({
           </PriceValue>
           <PriceLabel>Bitcoin Price</PriceLabel>
           {bitcoinPrice && (
-            <TimestampText>
-              Last updated: {new Date(bitcoinPrice.timestamp).toLocaleString()}
-            </TimestampText>
+            <Timestamp date={bitcoinPrice.timestamp} prefix="Last updated:" />
           )}
         </BitcoinPrice>
 
         <ButtonContainer>
           <GameButton>
-            <ChevronDown size={20} />
-            Lower
-          </GameButton>
-          <GameButton>
             <ChevronUp size={20} />
             Higher
+          </GameButton>
+          <OrText>or</OrText>
+          <GameButton>
+            <ChevronDown size={20} />
+            Lower
           </GameButton>
         </ButtonContainer>
       </MainContent>
