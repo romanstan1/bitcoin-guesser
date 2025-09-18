@@ -1,9 +1,9 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import styled from 'styled-components'
-import Text from './Text'
-import LoginScreen from './LoginScreen'
-import GameScreen from './GameScreen'
+import Text from './components/Text'
+import LoginScreen from './components/LoginScreen'
+import GameScreen from './components/GameScreen'
 import { signInWithGoogle, signOut, onAuthStateChange, getUser, createUser } from './services'
 import { type User as AuthUser } from 'firebase/auth'
 import { type User } from './services'
