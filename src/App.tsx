@@ -1,9 +1,10 @@
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import styled from 'styled-components'
 import Text from './Text'
-import { signInWithGoogle, signOut, onAuthStateChange } from './authService'
-import { type User } from 'firebase/auth'
+import { signInWithGoogle, signOut, onAuthStateChange, getUser, createUser } from './services'
+import { type User as AuthUser } from 'firebase/auth'
+import { type User } from './services'
 
 const Container = styled.div`
   display: flex;
@@ -62,17 +63,46 @@ const UserInfo = styled.div`
 `
 
 function App() {
+  const [authedUser, setAuthedUser] = useState<AuthUser | null>(null)
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
+
+  const handleCreateUser = useCallback(async (authUser: AuthUser) => {
+    const res = await createUser(authUser.uid)
+    if(!res){
+      // show error to user
+      return;
+    }
+    const userData = await getUser(authUser.uid)
+    setUser(userData)
+  }, [])
+
+
+  const handleUserChange = useCallback(async (authUser: AuthUser) => {
+    const userData = await getUser(authUser.uid)
+
+    if(!userData) {
+      handleCreateUser(authUser)
+    } else {
+      setUser(userData)
+    }
+
+  }, [handleCreateUser])
+
   useEffect(() => {
-    const unsubscribe = onAuthStateChange((user) => {
-      setUser(user)
+    const unsubscribe = onAuthStateChange((authUser) => {
+      setAuthedUser(authUser)
+
+      if(authUser) {
+        handleUserChange(authUser)
+      }
+
       setLoading(false)
     })
 
     return () => unsubscribe()
-  }, [])
+  }, [handleUserChange])
 
   const handleSignIn = async () => {
     try {
@@ -98,7 +128,7 @@ function App() {
     )
   }
 
-  if (user) {
+  if (authedUser) {
     return (
       <Container>
         <UserInfo>
@@ -106,7 +136,7 @@ function App() {
             Welcome!
           </Text>
           <Text variant="p1" color="#E2E8F0">
-            {user.email}
+            {authedUser.email}
           </Text>
           <SignOutButton onClick={handleSignOut}>
             Sign Out
