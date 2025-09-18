@@ -2,6 +2,7 @@ import styled from "styled-components";
 import Text from "./Text";
 import { type User as AuthUser } from "firebase/auth";
 import { type User, type BitcoinPriceData } from "../services";
+import { ChevronUp, ChevronDown } from "lucide-react";
 
 const Container = styled.div`
   position: relative;
@@ -119,16 +120,20 @@ const ButtonContainer = styled.div`
 `;
 
 const GameButton = styled.button`
-  background: ${({ theme }) => theme.colors.primary[600]};
   color: white;
+  background: ${({ theme }) => theme.colors.primary[600]};
   border: none;
-  padding: 1rem 2rem;
+  padding: 1rem 1.5rem 1rem 1rem;
   border-radius: 8px;
   font-size: 1.25rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
   min-width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 
   &:hover {
     background: ${({ theme }) => theme.colors.primary[500]};
@@ -138,10 +143,6 @@ const GameButton = styled.button`
   &:active {
     transform: translateY(0);
   }
-`;
-
-const LowerButton = styled(GameButton)`
-  background: ${({ theme }) => theme.colors.primary[600]};
 `;
 
 const formatTimestamp = (timestamp: string | null) => {
@@ -199,8 +200,14 @@ function GameScreen({
         </BitcoinPrice>
 
         <ButtonContainer>
-          <LowerButton>Lower</LowerButton>
-          <GameButton>Higher</GameButton>
+          <GameButton>
+            <ChevronDown size={20} />
+            Lower
+          </GameButton>
+          <GameButton>
+            <ChevronUp size={20} />
+            Higher
+          </GameButton>
         </ButtonContainer>
       </MainContent>
     </Container>
