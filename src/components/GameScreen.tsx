@@ -3,7 +3,6 @@ import Timestamp from "./Timestamp";
 import { type User as AuthUser } from "firebase/auth";
 import { type User, type BitcoinPriceData, type Guess } from "../services";
 import { ChevronUp, ChevronDown } from "lucide-react";
-import { useState, useEffect } from "react";
 
 const Container = styled.div`
   position: relative;
@@ -146,27 +145,15 @@ const GameButton = styled.button`
 
 interface GuessStatusProps {
   guess: Guess;
-  guessTime: string;
   priceAtGuess: number;
+  secondsElapsed: number;
 }
 
-function GuessStatus({ guess, guessTime, priceAtGuess }: GuessStatusProps) {
-  const [secondsElapsed, setSecondsElapsed] = useState(0);
-
-  useEffect(() => {
-    const updateTimer = () => {
-      const guessDate = new Date(guessTime);
-      const now = new Date();
-      const elapsed = Math.floor((now.getTime() - guessDate.getTime()) / 1000);
-      setSecondsElapsed(elapsed);
-    };
-
-    updateTimer();
-    const interval = setInterval(updateTimer, 1000);
-
-    return () => clearInterval(interval);
-  }, [guessTime]);
-
+function GuessStatus({
+  guess,
+  priceAtGuess,
+  secondsElapsed,
+}: GuessStatusProps) {
   return (
     <Card>
       <div>
@@ -203,6 +190,7 @@ interface GameScreenProps {
   onSignOut: () => void;
   bitcoinPrice: BitcoinPriceData | null;
   onMakeGuess: (guess: Guess) => Promise<boolean>;
+  secondsElapsed: number;
 }
 
 function GameScreen({
@@ -211,6 +199,7 @@ function GameScreen({
   onSignOut,
   bitcoinPrice,
   onMakeGuess,
+  secondsElapsed,
 }: GameScreenProps) {
   return (
     <Container>
@@ -243,8 +232,8 @@ function GameScreen({
         {user.guess && user.lastGuessTime && user.priceAtLastGuess ? (
           <GuessStatus
             guess={user.guess}
-            guessTime={user.lastGuessTime}
             priceAtGuess={user.priceAtLastGuess}
+            secondsElapsed={secondsElapsed}
           />
         ) : (
           <ButtonContainer>

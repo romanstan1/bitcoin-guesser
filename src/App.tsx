@@ -32,6 +32,8 @@ function App() {
   const [bitcoinPrice, setBitcoinPrice] = useState<BitcoinPriceData | null>(
     null
   );
+  const [secondsElapsed, setSecondsElapsed] = useState(0);
+  const [hasResolvedGuess, setHasResolvedGuess] = useState(false);
 
   const handleFetchBitcoinPrice = useCallback(async () => {
     try {
@@ -125,6 +127,8 @@ function App() {
 
         await updateUser(authedUser.uid, updatedUserData);
         setUser(updatedUserData);
+        setSecondsElapsed(0);
+        setHasResolvedGuess(false);
         return true;
       } catch (error) {
         console.error("Error making guess:", error);
@@ -136,9 +140,8 @@ function App() {
 
   const handleResolveGuess = useCallback(async () => {
     try {
-      if (!authedUser || !user) return false;
+      if (!authedUser || !user || hasResolvedGuess) return false;
 
-      // Fetch latest bitcoin price
       const bitcoinData = await fetchBitcoinPrice();
       const guess = user?.guess;
 
@@ -146,6 +149,13 @@ function App() {
 
       let score = user?.score || 0;
       const priceAtLastGuess = user?.priceAtLastGuess || 0;
+
+      if (bitcoinData.price === priceAtLastGuess) {
+        // Do nothing intentionally. this will need to refetch the price and check again.
+        return;
+      }
+
+      setHasResolvedGuess(true);
 
       if (guess === "higher" && bitcoinData.price > priceAtLastGuess) {
         score += 1;
@@ -165,12 +175,42 @@ function App() {
 
       await updateUser(authedUser.uid, updatedUserData);
       setUser(updatedUserData);
+      setSecondsElapsed(0);
+
       return true;
     } catch (error) {
       console.error("Error resolving guess:", error);
       return false;
     }
-  }, [user, authedUser]);
+  }, [user, authedUser, hasResolvedGuess]);
+
+  // Timer logic for guess resolution
+  useEffect(() => {
+    console.log("user.lastGuessTime", user?.lastGuessTime);
+
+    if (!user?.lastGuessTime) {
+      setSecondsElapsed(0);
+      setHasResolvedGuess(false);
+      return;
+    }
+
+    const updateTimer = () => {
+      const guessDate = new Date(user.lastGuessTime!);
+      const now = new Date();
+      const elapsed = Math.floor((now.getTime() - guessDate.getTime()) / 1000);
+      setSecondsElapsed(elapsed);
+
+      // Trigger resolve after 60 seconds
+      if (elapsed >= 20 && !hasResolvedGuess) {
+        handleResolveGuess();
+      }
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+
+    return () => clearInterval(interval);
+  }, [user?.lastGuessTime, hasResolvedGuess, handleResolveGuess]);
 
   if (loading) {
     return (
@@ -190,6 +230,7 @@ function App() {
         onSignOut={handleSignOut}
         bitcoinPrice={bitcoinPrice}
         onMakeGuess={handleMakeGuess}
+        secondsElapsed={secondsElapsed}
       />
     );
   }
