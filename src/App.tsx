@@ -32,9 +32,12 @@ function App() {
   );
 
   const handleFetchBitcoinPrice = useCallback(async () => {
-    const priceData = await fetchBitcoinPrice();
-    if (priceData) {
+    try {
+      const priceData = await fetchBitcoinPrice();
       setBitcoinPrice(priceData);
+    } catch (error) {
+      console.error("Failed to fetch Bitcoin price:", error);
+      // Keep displaying the previous price on error
     }
   }, []);
 
@@ -75,6 +78,16 @@ function App() {
 
     return () => unsubscribe();
   }, [handleUserChange, handleFetchBitcoinPrice]);
+
+  useEffect(() => {
+    if (!authedUser) return;
+
+    const interval = setInterval(() => {
+      handleFetchBitcoinPrice();
+    }, 5000); // refresh every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [authedUser, handleFetchBitcoinPrice]);
 
   const handleSignIn = async () => {
     try {

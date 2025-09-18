@@ -78,24 +78,19 @@ export type BitcoinPriceData = {
   timestamp: string;
 };
 
-export const fetchBitcoinPrice = async (): Promise<BitcoinPriceData | null> => {
-  try {
-    const response = await fetch(
-      "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
-    );
+export const fetchBitcoinPrice = async (): Promise<BitcoinPriceData> => {
+  const response = await fetch(
+    "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
+  );
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    return {
-      price: data.bitcoin.usd,
-      timestamp: new Date().toISOString(),
-    };
-  } catch (error) {
-    console.error("Error fetching Bitcoin price:", error);
-    return null;
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
   }
+
+  const data = await response.json();
+
+  return {
+    price: data.bitcoin.usd,
+    timestamp: new Date().toISOString(),
+  };
 };
