@@ -3,6 +3,7 @@ import Timestamp from "./Timestamp";
 import { type User as AuthUser } from "firebase/auth";
 import { type User, type BitcoinPriceData, type Guess } from "../services";
 import { ChevronUp, ChevronDown } from "lucide-react";
+import { SECONDS_TO_RESOLVE_GUESS } from "../App";
 
 const Container = styled.div`
   position: relative;
@@ -175,10 +176,10 @@ function GuessStatus({
       </Card>
 
       <Card>
-        {secondsElapsed < 60 ? (
+        {secondsElapsed < SECONDS_TO_RESOLVE_GUESS ? (
           <>
             <Value size="small" color="secondary" mono>
-              {60 - secondsElapsed}s
+              {SECONDS_TO_RESOLVE_GUESS - secondsElapsed}s
             </Value>
             <Label>Time Remaining</Label>
           </>

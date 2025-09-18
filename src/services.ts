@@ -90,8 +90,6 @@ export const fetchBitcoinPrice = async (): Promise<BitcoinPriceData> => {
 
   const data = await response.json();
 
-  console.log("fetched bitcoin price from Coinbase", data.data.rates.USD);
-
   return {
     price: parseFloat(data.data.rates.USD),
     timestamp: new Date().toISOString(),

@@ -16,6 +16,8 @@ import {
 import { type User as AuthUser } from "firebase/auth";
 import { type User, type BitcoinPriceData } from "./services";
 
+export const SECONDS_TO_RESOLVE_GUESS = 10;
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -202,7 +204,7 @@ function App() {
       setSecondsElapsed(elapsed);
 
       // Trigger resolve after 60 seconds
-      if (elapsed >= 10 && !hasResolvedGuess) {
+      if (elapsed >= SECONDS_TO_RESOLVE_GUESS && !hasResolvedGuess) {
         handleResolveGuess();
       }
     };
