@@ -79,7 +79,7 @@ export type BitcoinPriceData = {
   timestamp: string;
 };
 
-export const fetchBitcoinPrice = async (): Promise<BitcoinPriceData> => {
+const fetchBitcoinPriceCoinGecko = async (): Promise<BitcoinPriceData> => {
   const response = await fetch(
     "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
   );
@@ -94,4 +94,32 @@ export const fetchBitcoinPrice = async (): Promise<BitcoinPriceData> => {
     price: data.bitcoin.usd,
     timestamp: new Date().toISOString(),
   };
+};
+
+const fetchBitcoinPriceCoinbase = async (): Promise<BitcoinPriceData> => {
+  const response = await fetch(
+    "https://api.coinbase.com/v2/exchange-rates?currency=BTC"
+  );
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const data = await response.json();
+
+  console.log("fetched bitcoin price from Coinbase", data.data.rates.USD);
+
+  return {
+    price: parseFloat(data.data.rates.USD),
+    timestamp: new Date().toISOString(),
+  };
+};
+
+export const fetchBitcoinPrice = async (): Promise<BitcoinPriceData> => {
+  try {
+    return await fetchBitcoinPriceCoinbase();
+  } catch (error) {
+    console.warn("Coinbase API failed, falling back to CoinGecko:", error);
+    return await fetchBitcoinPriceCoinGecko();
+  }
 };

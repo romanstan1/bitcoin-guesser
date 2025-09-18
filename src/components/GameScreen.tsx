@@ -175,10 +175,20 @@ function GuessStatus({
       </Card>
 
       <Card>
-        <Value size="small" color="secondary" mono>
-          {secondsElapsed}s
-        </Value>
-        <Label>Time Elapsed</Label>
+        {secondsElapsed < 60 ? (
+          <>
+            <Value size="small" color="secondary" mono>
+              {60 - secondsElapsed}s
+            </Value>
+            <Label>Time Remaining</Label>
+          </>
+        ) : (
+          <>
+            <Value size="small" color="secondary">
+              Waiting for bitcoin price to change...
+            </Value>
+          </>
+        )}
       </Card>
     </Card>
   );

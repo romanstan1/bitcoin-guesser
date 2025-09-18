@@ -159,9 +159,14 @@ function App() {
 
       if (guess === "higher" && bitcoinData.price > priceAtLastGuess) {
         score += 1;
+      } else {
+        score -= 1;
       }
+
       if (guess === "lower" && bitcoinData.price < priceAtLastGuess) {
         score += 1;
+      } else {
+        score -= 1;
       }
 
       // Update user data with new guess data
@@ -186,8 +191,6 @@ function App() {
 
   // Timer logic for guess resolution
   useEffect(() => {
-    console.log("user.lastGuessTime", user?.lastGuessTime);
-
     if (!user?.lastGuessTime) {
       setSecondsElapsed(0);
       setHasResolvedGuess(false);
@@ -201,7 +204,7 @@ function App() {
       setSecondsElapsed(elapsed);
 
       // Trigger resolve after 60 seconds
-      if (elapsed >= 20 && !hasResolvedGuess) {
+      if (elapsed >= 60 && !hasResolvedGuess) {
         handleResolveGuess();
       }
     };
