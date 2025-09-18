@@ -115,7 +115,7 @@ function App() {
         // Fetch latest bitcoin price
         const bitcoinData = await fetchBitcoinPrice();
 
-        // Update user data with new guess info
+        // Update user data with new guess data
         const updatedUserData: User = {
           ...user,
           priceAtLastGuess: bitcoinData.price,
@@ -124,9 +124,7 @@ function App() {
         };
 
         await updateUser(authedUser.uid, updatedUserData);
-
         setUser(updatedUserData);
-
         return true;
       } catch (error) {
         console.error("Error making guess:", error);
@@ -135,6 +133,44 @@ function App() {
     },
     [authedUser, user]
   );
+
+  const handleResolveGuess = useCallback(async () => {
+    try {
+      if (!authedUser || !user) return false;
+
+      // Fetch latest bitcoin price
+      const bitcoinData = await fetchBitcoinPrice();
+      const guess = user?.guess;
+
+      if (guess === null) return false;
+
+      let score = user?.score || 0;
+      const priceAtLastGuess = user?.priceAtLastGuess || 0;
+
+      if (guess === "higher" && bitcoinData.price > priceAtLastGuess) {
+        score += 1;
+      }
+      if (guess === "lower" && bitcoinData.price < priceAtLastGuess) {
+        score += 1;
+      }
+
+      // Update user data with new guess data
+      const updatedUserData: User = {
+        ...user,
+        priceAtLastGuess: null,
+        lastGuessTime: null,
+        guess: null,
+        score: score || 0,
+      };
+
+      await updateUser(authedUser.uid, updatedUserData);
+      setUser(updatedUserData);
+      return true;
+    } catch (error) {
+      console.error("Error resolving guess:", error);
+      return false;
+    }
+  }, [user, authedUser]);
 
   if (loading) {
     return (
