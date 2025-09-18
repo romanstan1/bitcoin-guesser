@@ -157,16 +157,14 @@ function App() {
 
       setHasResolvedGuess(true);
 
-      if (guess === "higher" && bitcoinData.price > priceAtLastGuess) {
-        score += 1;
-      } else {
-        score -= 1;
+      if (guess === "higher") {
+        if (bitcoinData.price > priceAtLastGuess) score += 1;
+        else score -= 1;
       }
 
-      if (guess === "lower" && bitcoinData.price < priceAtLastGuess) {
-        score += 1;
-      } else {
-        score -= 1;
+      if (guess === "lower") {
+        if (bitcoinData.price < priceAtLastGuess) score += 1;
+        else score -= 1;
       }
 
       // Update user data with new guess data
@@ -204,7 +202,7 @@ function App() {
       setSecondsElapsed(elapsed);
 
       // Trigger resolve after 60 seconds
-      if (elapsed >= 60 && !hasResolvedGuess) {
+      if (elapsed >= 10 && !hasResolvedGuess) {
         handleResolveGuess();
       }
     };
