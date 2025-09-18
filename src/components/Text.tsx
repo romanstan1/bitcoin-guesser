@@ -25,7 +25,10 @@ interface StyleProps {
   $color?: string;
 }
 
-const variantToTag: Record<TextVariant, "h1" | "h2" | "h3" | "h4" | "h5" | "p"> = {
+const variantToTag: Record<
+  TextVariant,
+  "h1" | "h2" | "h3" | "h4" | "h5" | "p"
+> = {
   h1: "h1",
   h2: "h2",
   h3: "h3",
@@ -45,7 +48,10 @@ const defaultWeightByVariant: Record<TextVariant, number> = {
   p2: 400,
 };
 
-const defaultFamilyByVariant = (theme: DefaultTheme, variant: TextVariant): string => {
+const defaultFamilyByVariant = (
+  theme: DefaultTheme,
+  variant: TextVariant
+): string => {
   switch (variant) {
     case "h1":
     case "h2":
@@ -71,7 +77,8 @@ const StyledText = styled.div<StyleProps>`
   display: inline;
   color: ${({ $color, theme }) => $color || theme.colors.black};
   text-transform: ${({ $uppercase }) => ($uppercase ? "uppercase" : "none")};
-  font-weight: ${({ $fontWeight, $variant }) => $fontWeight ?? defaultWeightByVariant[$variant]};
+  font-weight: ${({ $fontWeight, $variant }) =>
+    $fontWeight ?? defaultWeightByVariant[$variant]};
   font-family: ${({ $fontFamily, $variant, theme }) =>
     $fontFamily ?? defaultFamilyByVariant(theme, $variant)};
 
