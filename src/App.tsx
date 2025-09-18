@@ -83,8 +83,8 @@ function App() {
     )
   }
 
-  if (authedUser) {
-    return <GameScreen user={authedUser} onSignOut={handleSignOut} />
+  if (authedUser && user) {
+    return <GameScreen user={authedUser} userData={user} onSignOut={handleSignOut} />
   }
 
   return <LoginScreen onSignIn={handleSignIn} />
