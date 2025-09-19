@@ -15,7 +15,7 @@ import { type User as AuthUser } from "firebase/auth";
 import { type User, type BitcoinPriceData } from "./services";
 import LoadingSkeleton from "./components/LoadingSkeleton";
 
-export const SECONDS_TO_RESOLVE_GUESS = 30;
+export const SECONDS_TO_RESOLVE_GUESS = 60;
 
 function App() {
   const [authedUser, setAuthedUser] = useState<AuthUser | null>(null);
