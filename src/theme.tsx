@@ -1,6 +1,5 @@
 export const theme = {
   colors: {
-    // Core midnight blue palette
     primary: {
       300: "#A3BFFF",
       500: "#5577FF",
@@ -19,20 +18,9 @@ export const theme = {
       secondary: "#E2E8F0", // Secondary text
       muted: "#94A3B8", // Muted text
     },
-    // Accent colors for crypto
-    accent: {
-      blue: "#00D2FF", // Electric blue
-    },
 
     bitcoinOrange: "#f7931a",
-    // Legacy colors for compatibility
-    white: "#FFFFFF",
-  },
-  fontFamily: {
-    spaceGroteskRegular: "'Space Grotesk', sans-serif",
-    spaceGroteskMedium: "'Space Grotesk', sans-serif",
-    spaceGroteskSemibold: "'Space Grotesk', sans-serif",
-    inter: "'Inter', sans-serif",
+    white: "#000000",
   },
   fontWeight: {
     normal: 400,

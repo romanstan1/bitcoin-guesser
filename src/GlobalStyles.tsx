@@ -13,7 +13,7 @@ export const GlobalStyles = createGlobalStyle`
       ${({ theme }) => theme.colors.background.secondary} 100%
     );
     color: ${({ theme }) => theme.colors.text.primary};
-    font-family: ${({ theme }) => theme.fontFamily.inter};
+    font-family: "'Inter', sans-serif";
     font-size: 16px;
     line-height: 1.6;
     min-height: 100vh;
@@ -33,15 +33,8 @@ export const GlobalStyles = createGlobalStyle`
 
   /* Selection styling */
   ::selection {
-    background: ${({ theme }) => theme.colors.accent.blue}40;
+    background: ${({ theme }) => theme.colors.primary[500]}40;
     color: ${({ theme }) => theme.colors.text.primary};
-  }
-
-  /* Focus outlines */
-  *:focus-visible {
-    outline: 2px solid ${({ theme }) => theme.colors.accent.blue};
-    outline-offset: 2px;
-    border-radius: 4px;
   }
 
   /* Scrollbar styling for webkit browsers */
