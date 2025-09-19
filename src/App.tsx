@@ -17,7 +17,7 @@ import { type User, type BitcoinPriceData } from "./services";
 import LoadingSkeleton from "./components/LoadingSkeleton";
 import { type ModalData } from "./components/SuccessModal";
 
-export const SECONDS_TO_RESOLVE_GUESS = 60;
+export const SECONDS_TO_RESOLVE_GUESS = 10;
 
 function App() {
   const [authedUser, setAuthedUser] = useState<AuthUser | null>(null);

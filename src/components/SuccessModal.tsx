@@ -45,11 +45,11 @@ const CloseButton = styled.button`
   }
 `;
 
-const ResultMessage = styled.div<{ isCorrect: boolean }>`
+const ResultMessage = styled.div<{ $isCorrect: boolean }>`
   font-size: 1.5rem;
   font-weight: ${({ theme }) => theme.fontWeight.bold};
-  color: ${({ isCorrect, theme }) =>
-    isCorrect ? theme.colors.primary[300] : theme.colors.error};
+  color: ${({ $isCorrect, theme }) =>
+    $isCorrect ? theme.colors.primary[300] : theme.colors.error};
   margin-bottom: 1rem;
 `;
 
@@ -57,11 +57,11 @@ const PriceInfo = styled.div`
   margin: 1.5rem 0;
 `;
 
-const PointsChange = styled.div<{ isPositive: boolean }>`
+const PointsChange = styled.div<{ $isPositive: boolean }>`
   font-size: 2rem;
   font-weight: ${({ theme }) => theme.fontWeight.bold};
-  color: ${({ isPositive, theme }) =>
-    isPositive ? theme.colors.primary[300] : theme.colors.error};
+  color: ${({ $isPositive, theme }) =>
+    $isPositive ? theme.colors.primary[300] : theme.colors.error};
   margin-top: 1rem;
 `;
 
@@ -102,7 +102,7 @@ function SuccessModal({
               <X size={20} />
             </CloseButton>
 
-            <ResultMessage isCorrect={isCorrect}>
+            <ResultMessage $isCorrect={isCorrect}>
               {isCorrect ? "Your guess was correct!" : "Your guess was wrong!"}
             </ResultMessage>
 
@@ -111,7 +111,7 @@ function SuccessModal({
               <Value>{guess.charAt(0).toUpperCase() + guess.slice(1)}</Value>
             </PriceInfo>
 
-            <PointsChange isPositive={pointsChange > 0}>
+            <PointsChange $isPositive={pointsChange > 0}>
               {pointsChange > 0 ? "+" : ""}
               {pointsChange} point{Math.abs(pointsChange) !== 1 ? "s" : ""}
             </PointsChange>
