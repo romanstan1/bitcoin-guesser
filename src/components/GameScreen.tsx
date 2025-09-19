@@ -2,10 +2,10 @@ import styled from "styled-components";
 import Timestamp from "./Timestamp";
 import { type User as AuthUser } from "firebase/auth";
 import { type User, type BitcoinPriceData, type Guess } from "../services";
-import { ChevronUp, ChevronDown } from "lucide-react";
 import { Value, Label, Card, Button } from "./styled";
 import GuessStatus from "./GuessStatus";
-import { PageContainer } from "./styled";
+import { PageContainer, MainContent } from "./styled";
+import GameButtons from "./GameButtons";
 
 const AuthHeader = styled.div`
   position: absolute;
@@ -23,28 +23,6 @@ const AuthHeader = styled.div`
 const SignOutButton = styled(Button)`
   font-size: 0.75rem;
   padding: 0.5rem 0.75rem;
-`;
-
-const MainContent = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  gap: 1rem;
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  gap: 1rem;
-`;
-
-const GameButton = styled(Button)`
-  padding: 1rem 1.5rem 1rem 1rem;
-  gap: 0.5rem;
-  font-size: 20px;
-  font-weight: 600;
 `;
 
 interface GameScreenProps {
@@ -101,17 +79,7 @@ function GameScreen({
             secondsElapsed={secondsElapsed}
           />
         ) : (
-          <ButtonContainer>
-            <GameButton onClick={() => onMakeGuess("higher")}>
-              <ChevronUp size={20} strokeWidth={3} />
-              Higher
-            </GameButton>
-            <Label>or</Label>
-            <GameButton onClick={() => onMakeGuess("lower")}>
-              <ChevronDown size={20} strokeWidth={3} />
-              Lower
-            </GameButton>
-          </ButtonContainer>
+          <GameButtons onMakeGuess={onMakeGuess} />
         )}
       </MainContent>
     </PageContainer>

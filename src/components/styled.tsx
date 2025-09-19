@@ -50,13 +50,11 @@ export const Value = styled.div<ValueProps>`
 `;
 
 interface LabelProps {
-  marginBottom?: string;
   lowercase?: boolean;
   fontSize?: "normal" | "small";
 }
 
 export const Label = styled.div<LabelProps>`
-  margin-bottom: ${({ marginBottom }) => marginBottom || "0"};
   font-size: ${({ fontSize }) => (fontSize === "small" ? "0.875rem" : "1rem")};
   color: ${({ theme }) => theme.colors.text.secondary};
   text-transform: ${({ lowercase }) => (lowercase ? "none" : "uppercase")};
@@ -82,4 +80,14 @@ export const Card = styled.div<{ height?: number }>`
   text-align: center;
   min-width: 400px;
   height: ${({ height }) => (height ? `${height}px` : "auto")};
+`;
+
+export const MainContent = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  gap: 1rem;
 `;

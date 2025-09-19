@@ -6,7 +6,7 @@ import styled from "styled-components";
 
 const LabelContainer = styled.div`
   display: flex;
-  height: 45px;
+  height: 55px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -25,7 +25,7 @@ const GuessStatus = ({
   secondsElapsed,
 }: GuessStatusProps) => {
   return (
-    <Card height={340}>
+    <Card height={345}>
       <Label>Your Guess</Label>
       <Value>{guess.charAt(0).toUpperCase() + guess.slice(1)}</Value>
 
