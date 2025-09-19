@@ -32,8 +32,8 @@ A real-time Bitcoin price guessing game built with React, TypeScript, and Fireba
 1. **Clone and install dependencies:**
 
    ```bash
-   git clone <repository-url>
-   cd e-pilot
+   git clone https://github.com/romanstan1/bitcoin-guesser
+   cd bitcoin-guesser
    yarn install
    ```
 
