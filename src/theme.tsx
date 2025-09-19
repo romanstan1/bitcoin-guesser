@@ -20,6 +20,7 @@ export const theme = {
     },
 
     bitcoinOrange: "#f7931a",
+    error: "#ef4444",
   },
   fontWeight: {
     normal: 400,

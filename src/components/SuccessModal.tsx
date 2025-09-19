@@ -49,7 +49,7 @@ const ResultMessage = styled.div<{ isCorrect: boolean }>`
   font-size: 1.5rem;
   font-weight: ${({ theme }) => theme.fontWeight.bold};
   color: ${({ isCorrect, theme }) =>
-    isCorrect ? theme.colors.primary[300] : "#ef4444"};
+    isCorrect ? theme.colors.primary[300] : theme.colors.error};
   margin-bottom: 1rem;
 `;
 
@@ -61,7 +61,7 @@ const PointsChange = styled.div<{ isPositive: boolean }>`
   font-size: 2rem;
   font-weight: ${({ theme }) => theme.fontWeight.bold};
   color: ${({ isPositive, theme }) =>
-    isPositive ? theme.colors.primary[300] : "#ef4444"};
+    isPositive ? theme.colors.primary[300] : theme.colors.error};
   margin-top: 1rem;
 `;
 
