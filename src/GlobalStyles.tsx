@@ -13,7 +13,7 @@ export const GlobalStyles = createGlobalStyle`
       ${({ theme }) => theme.colors.background.secondary} 100%
     );
     color: ${({ theme }) => theme.colors.text.primary};
-    font-family: "'Inter', sans-serif";
+    font-family: 'Inter', sans-serif;
     font-size: 16px;
     line-height: 1.6;
     min-height: 100vh;

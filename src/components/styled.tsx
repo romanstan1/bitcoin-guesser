@@ -43,7 +43,7 @@ export const Value = styled.div<ValueProps>`
       case "blue":
         return theme.colors.primary[300];
       default:
-        return theme.colors.white;
+        return theme.colors.text.primary;
     }
   }};
   letter-spacing: normal;
