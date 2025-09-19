@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import LoginScreen from "./components/LoginScreen";
 import GameScreen from "./components/GameScreen";
+import SuccessModal from "./components/SuccessModal";
 import {
   signInWithGoogle,
   signOut,
@@ -14,6 +15,7 @@ import {
 import { type User as AuthUser } from "firebase/auth";
 import { type User, type BitcoinPriceData } from "./services";
 import LoadingSkeleton from "./components/LoadingSkeleton";
+import { type ModalData } from "./components/SuccessModal";
 
 export const SECONDS_TO_RESOLVE_GUESS = 60;
 
@@ -26,6 +28,11 @@ function App() {
   );
   const [secondsElapsed, setSecondsElapsed] = useState(0);
   const [hasResolvedGuess, setHasResolvedGuess] = useState(false);
+  const [modalData, setModalData] = useState<ModalData>({
+    isOpen: false,
+    guess: "higher",
+    pointsChange: 0,
+  });
 
   const handleFetchBitcoinPrice = useCallback(async () => {
     try {
@@ -132,6 +139,10 @@ function App() {
     [authedUser, user]
   );
 
+  const handleCloseModal = useCallback(() => {
+    setModalData((prev) => ({ ...prev, isOpen: false }));
+  }, []);
+
   const handleResolveGuess = useCallback(async () => {
     try {
       if (!authedUser || !user || hasResolvedGuess) return false;
@@ -141,7 +152,6 @@ function App() {
 
       if (guess === null) return false;
 
-      let score = user?.score || 0;
       const priceAtLastGuess = user?.priceAtLastGuess || 0;
 
       if (bitcoinData.price === priceAtLastGuess) {
@@ -149,17 +159,39 @@ function App() {
         return;
       }
 
-      setHasResolvedGuess(true);
+      let pointsChange = 0;
+      let actualGuess: Guess | null = null;
 
       if (guess === "higher") {
-        if (bitcoinData.price > priceAtLastGuess) score += 1;
-        else score -= 1;
+        if (bitcoinData.price > priceAtLastGuess) {
+          pointsChange = 1;
+          actualGuess = "higher";
+        } else {
+          pointsChange = -1;
+          actualGuess = "lower";
+        }
       }
 
       if (guess === "lower") {
-        if (bitcoinData.price < priceAtLastGuess) score += 1;
-        else score -= 1;
+        if (bitcoinData.price < priceAtLastGuess) {
+          pointsChange = 1;
+          actualGuess = "lower";
+        } else {
+          pointsChange = -1;
+          actualGuess = "higher";
+        }
       }
+
+      const score = (user?.score || 0) + pointsChange;
+
+      setHasResolvedGuess(true);
+
+      // Show the modal with result
+      setModalData({
+        isOpen: true,
+        guess: actualGuess!,
+        pointsChange,
+      });
 
       // Update user data with new guess data
       const updatedUserData: User = {
@@ -173,11 +205,8 @@ function App() {
       await updateUser(authedUser.uid, updatedUserData);
       setUser(updatedUserData);
       setSecondsElapsed(0);
-
-      return true;
     } catch (error) {
       console.error("Error resolving guess:", error);
-      return false;
     }
   }, [user, authedUser, hasResolvedGuess]);
 
@@ -208,20 +237,39 @@ function App() {
     return () => clearInterval(interval);
   }, [user?.lastGuessTime, hasResolvedGuess, handleResolveGuess]);
 
+  // Auto-close modal after 4 seconds
+  useEffect(() => {
+    if (modalData.isOpen) {
+      const timer = setTimeout(() => {
+        handleCloseModal();
+      }, 4000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [modalData.isOpen, handleCloseModal]);
+
   if (loading) {
     return <LoadingSkeleton />;
   }
 
   if (authedUser && user) {
     return (
-      <GameScreen
-        authedUser={authedUser}
-        user={user}
-        onSignOut={handleSignOut}
-        bitcoinPrice={bitcoinPrice}
-        onMakeGuess={handleMakeGuess}
-        secondsElapsed={secondsElapsed}
-      />
+      <>
+        <GameScreen
+          authedUser={authedUser}
+          user={user}
+          onSignOut={handleSignOut}
+          bitcoinPrice={bitcoinPrice}
+          onMakeGuess={handleMakeGuess}
+          secondsElapsed={secondsElapsed}
+        />
+        <SuccessModal
+          isOpen={modalData.isOpen}
+          onClose={handleCloseModal}
+          guess={modalData.guess}
+          pointsChange={modalData.pointsChange}
+        />
+      </>
     );
   }
 
