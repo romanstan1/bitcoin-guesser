@@ -13,7 +13,7 @@ const GameButton = styled(Button)<{ disabled?: boolean }>`
   padding: 1rem 1.5rem 1rem 1rem;
   gap: 0.5rem;
   font-size: 20px;
-  font-weight: 600;
+  font-weight: ${({ theme }) => theme.fontWeight.semibold};
   cursor: ${({ disabled }) => (disabled ? "default" : "pointer")};
   opacity: ${({ disabled }) => (disabled ? 0.8 : 1)};
   pointer-events: ${({ disabled }) => (disabled ? "none" : "auto")};

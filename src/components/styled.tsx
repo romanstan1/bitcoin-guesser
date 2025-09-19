@@ -15,7 +15,7 @@ export const Button = styled.button`
   padding: 12px 24px;
   border-radius: 8px;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: ${({ theme }) => theme.fontWeight.medium};
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -34,7 +34,7 @@ interface ValueProps {
 
 export const Value = styled.div<ValueProps>`
   font-size: ${({ fontSize }) => (fontSize === "small" ? "1.5rem" : "2.5rem")};
-  font-weight: bold;
+  font-weight: ${({ theme }) => theme.fontWeight.bold};
   line-height: 1.4;
   color: ${({ variant, theme }) => {
     switch (variant) {

@@ -1,5 +1,5 @@
 import { PageContainer, MainContent, Label, Card } from "./styled";
-import Timestamp from "./Timestamp";
+import Timestamp from "./LastUpdated";
 import GameButtons from "./GameButtons";
 import styled from "styled-components";
 

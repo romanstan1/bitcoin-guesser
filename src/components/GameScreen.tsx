@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import Timestamp from "./Timestamp";
+import LastUpdated from "./LastUpdated";
 import { type User as AuthUser } from "firebase/auth";
 import { type User, type BitcoinPriceData, type Guess } from "../services";
 import { Value, Label, Card, Button } from "./styled";
@@ -68,7 +68,7 @@ function GameScreen({
               : "Loading..."}
           </Value>
           {bitcoinPrice && (
-            <Timestamp date={bitcoinPrice.timestamp} prefix="Last updated:" />
+            <LastUpdated date={bitcoinPrice.timestamp} prefix="Last updated:" />
           )}
         </Card>
 

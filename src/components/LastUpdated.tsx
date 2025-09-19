@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const TimestampContainer = styled.div`
+const LastUpdatedContainer = styled.div`
   font-family:
     "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Consolas",
     "Courier New", monospace;
@@ -10,20 +10,20 @@ const TimestampContainer = styled.div`
   letter-spacing: 0.025em;
 `;
 
-interface TimestampProps {
+interface LastUpdatedProps {
   date: Date | string;
   prefix?: string;
   className?: string;
 }
 
-function Timestamp({ date, prefix = "", className }: TimestampProps) {
+function LastUpdated({ date, prefix = "", className }: LastUpdatedProps) {
   const dateObj = typeof date === "string" ? new Date(date) : date;
   return (
-    <TimestampContainer className={className}>
+    <LastUpdatedContainer className={className}>
       {prefix && `${prefix} `}
       {dateObj.toLocaleTimeString()}
-    </TimestampContainer>
+    </LastUpdatedContainer>
   );
 }
 
-export default Timestamp;
+export default LastUpdated;
