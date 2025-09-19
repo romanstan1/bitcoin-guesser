@@ -43,6 +43,8 @@ export const theme = {
       orange: "#FF8C00", // Warning orange
       red: "#FF4757", // Error red
     },
+
+    bitcoinOrange: "#f7931a",
     // Legacy colors for compatibility
     black: "#0A0E2E",
     white: "#FFFFFF",

@@ -32,7 +32,7 @@ const UserEmail = styled.div`
 `;
 
 const SignOutButton = styled.button`
-  background: #dc3545;
+  background: ${({ theme }) => theme.colors.primary[600]};
   color: white;
   border: none;
   padding: 0.5rem 0.75rem;
@@ -42,7 +42,7 @@ const SignOutButton = styled.button`
   transition: background 0.2s;
 
   &:hover {
-    background: #c82333;
+    background: ${({ theme }) => theme.colors.primary[500]};
   }
 `;
 
@@ -56,42 +56,31 @@ const MainContent = styled.div`
   gap: 1rem;
 `;
 
-const Card = styled.div<{ size?: "small" | "medium" | "large" }>`
+const Card = styled.div<{ height?: number }>`
   background: ${({ theme }) => theme.colors.background.secondary};
-  padding: ${({ size = "medium" }) =>
-    size === "small" ? "1rem" : size === "large" ? "2rem" : "1.5rem 2rem"};
+  padding: 1.5rem 2rem;
   border-radius: 12px;
   border: 1px solid ${({ theme }) => theme.colors.primary[800]};
   text-align: center;
   min-width: 400px;
+  height: ${({ height }) => (height ? `${height}px` : "auto")};
 `;
 
-interface ValueProps {
-  size?: "small" | "medium" | "large";
-  color?: "primary" | "bitcoin" | "secondary";
-  mono?: boolean;
-}
-
-const Value = styled.div<ValueProps>`
-  font-family: ${({ mono }) =>
-    mono
-      ? '"SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Consolas", "Courier New", monospace'
-      : "inherit"};
-  font-size: ${({ size = "medium" }) =>
-    size === "small" ? "1.25rem" : size === "large" ? "3rem" : "2.5rem"};
-  font-weight: ${({ mono }) => (mono ? "600" : "bold")};
+const LargeValue = styled.div<{ variant?: "orange" | "blue" | "white" }>`
+  font-size: 2.5rem;
+  font-weight: bold;
   line-height: 1.4;
-  color: ${({ theme, color = "primary" }) =>
-    color === "bitcoin"
-      ? "#f7931a"
-      : color === "secondary"
-        ? theme.colors.primary[300]
-        : theme.colors.primary[400]};
-  letter-spacing: ${({ mono }) => (mono ? "0.025em" : "normal")};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  color: ${({ variant, theme }) => {
+    switch (variant) {
+      case "orange":
+        return theme.colors.bitcoinOrange;
+      case "blue":
+        return theme.colors.primary[300];
+      default:
+        return theme.colors.white;
+    }
+  }};
+  letter-spacing: normal;
 `;
 
 const Label = styled.div`
@@ -99,23 +88,21 @@ const Label = styled.div`
   color: ${({ theme }) => theme.colors.text.secondary};
   text-transform: uppercase;
   letter-spacing: 0.05em;
-`;
-
-const OrText = styled.div`
-  font-size: 1rem;
-  color: ${({ theme }) => theme.colors.text.secondary};
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
 `;
 
 const ButtonContainer = styled.div`
   display: flex;
-  gap: 2rem;
+  gap: 1rem;
+`;
+
+const Divider = styled.div`
+  width: 100%;
+  height: 1px;
+  background: ${({ theme }) => theme.colors.primary[800]};
+  margin: 1rem 0;
 `;
 
 const GameButton = styled.button`
@@ -136,11 +123,6 @@ const GameButton = styled.button`
 
   &:hover {
     background: ${({ theme }) => theme.colors.primary[500]};
-    transform: translateY(-2px);
-  }
-
-  &:active {
-    transform: translateY(0);
   }
 `;
 
@@ -157,40 +139,34 @@ function GuessStatus({
 }: GuessStatusProps) {
   return (
     <Card>
-      <div>
-        <Label>Your Guess</Label>
-        <Value size="medium">
-          {guess.charAt(0).toUpperCase() + guess.slice(1)}
-        </Value>
-      </div>
+      <Label>Your Guess</Label>
+      <LargeValue>{guess.charAt(0).toUpperCase() + guess.slice(1)}</LargeValue>
 
-      <Card>
-        <Value size="small" color="bitcoin" mono>
-          $
-          {priceAtGuess.toLocaleString("en-US", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}
-        </Value>
-        <Label>Price at Guess</Label>
-      </Card>
+      <Divider />
 
-      <Card>
-        {secondsElapsed < SECONDS_TO_RESOLVE_GUESS ? (
-          <>
-            <Value size="small" color="secondary" mono>
-              {SECONDS_TO_RESOLVE_GUESS - secondsElapsed}s
-            </Value>
-            <Label>Time Remaining</Label>
-          </>
-        ) : (
-          <>
-            <Value size="small" color="secondary">
-              Waiting for bitcoin price to change...
-            </Value>
-          </>
-        )}
-      </Card>
+      <Label>Price at Guess</Label>
+      <LargeValue variant="orange">
+        $
+        {priceAtGuess.toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}
+      </LargeValue>
+
+      <Divider />
+
+      {secondsElapsed < SECONDS_TO_RESOLVE_GUESS ? (
+        <>
+          <Label>Time Remaining</Label>
+          <LargeValue variant="blue">
+            {SECONDS_TO_RESOLVE_GUESS - secondsElapsed}s
+          </LargeValue>
+        </>
+      ) : (
+        <>
+          <Label>Waiting for bitcoin price to change...</Label>
+        </>
+      )}
     </Card>
   );
 }
@@ -221,20 +197,20 @@ function GameScreen({
 
       <MainContent>
         <Card>
-          <Value size="large">{user.score}</Value>
           <Label>Current Score</Label>
+          <LargeValue>{user.score}</LargeValue>
         </Card>
 
         <Card>
-          <Value size="medium" color="bitcoin">
+          <Label>Bitcoin Price</Label>
+          <LargeValue variant="orange">
             {bitcoinPrice
               ? `$${bitcoinPrice.price.toLocaleString("en-US", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}`
               : "Loading..."}
-          </Value>
-          <Label>Bitcoin Price</Label>
+          </LargeValue>
           {bitcoinPrice && (
             <Timestamp date={bitcoinPrice.timestamp} prefix="Last updated:" />
           )}
@@ -249,12 +225,12 @@ function GameScreen({
         ) : (
           <ButtonContainer>
             <GameButton onClick={() => onMakeGuess("higher")}>
-              <ChevronUp size={20} />
+              <ChevronUp size={20} strokeWidth={3} />
               Higher
             </GameButton>
-            <OrText>or</OrText>
+            <Label>or</Label>
             <GameButton onClick={() => onMakeGuess("lower")}>
-              <ChevronDown size={20} />
+              <ChevronDown size={20} strokeWidth={3} />
               Lower
             </GameButton>
           </ButtonContainer>

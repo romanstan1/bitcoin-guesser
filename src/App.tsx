@@ -16,7 +16,7 @@ import {
 import { type User as AuthUser } from "firebase/auth";
 import { type User, type BitcoinPriceData } from "./services";
 
-export const SECONDS_TO_RESOLVE_GUESS = 10;
+export const SECONDS_TO_RESOLVE_GUESS = 30;
 
 const Container = styled.div`
   display: flex;
@@ -50,7 +50,7 @@ function App() {
   const handleCreateUser = useCallback(async (authUser: AuthUser) => {
     const res = await createUser(authUser.uid);
     if (!res) {
-      // show error to user
+      // todo: show error to user
       return;
     }
     const userData = await getUser(authUser.uid);
@@ -90,7 +90,7 @@ function App() {
 
     const interval = setInterval(() => {
       handleFetchBitcoinPrice();
-    }, 10000); // refresh every 5 seconds
+    }, 5000); // refresh every 5 seconds
 
     return () => clearInterval(interval);
   }, [authedUser, handleFetchBitcoinPrice]);
@@ -99,6 +99,7 @@ function App() {
     try {
       await signInWithGoogle();
     } catch (error) {
+      // todo: show error to user
       console.error("Failed to sign in:", error);
     }
   };
@@ -107,6 +108,7 @@ function App() {
     try {
       await signOut();
     } catch (error) {
+      // todo: show error to user
       console.error("Failed to sign out:", error);
     }
   };
