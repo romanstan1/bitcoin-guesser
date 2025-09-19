@@ -3,17 +3,11 @@ import Timestamp from "./Timestamp";
 import { type User as AuthUser } from "firebase/auth";
 import { type User, type BitcoinPriceData, type Guess } from "../services";
 import { ChevronUp, ChevronDown } from "lucide-react";
-import { SECONDS_TO_RESOLVE_GUESS } from "../App";
+import { Value, Label, Card, Button } from "./styled";
+import GuessStatus from "./GuessStatus";
+import { PageContainer } from "./styled";
 
-const Container = styled.div`
-  position: relative;
-  min-height: 100vh;
-  background: ${({ theme }) => theme.colors.background.primary};
-  display: flex;
-  flex-direction: column;
-`;
-
-const Header = styled.div`
+const AuthHeader = styled.div`
   position: absolute;
   top: 1rem;
   right: 1rem;
@@ -26,24 +20,9 @@ const Header = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.primary[800]};
 `;
 
-const UserEmail = styled.div`
-  font-size: 0.875rem;
-  color: ${({ theme }) => theme.colors.text.secondary};
-`;
-
-const SignOutButton = styled.button`
-  background: ${({ theme }) => theme.colors.primary[600]};
-  color: white;
-  border: none;
-  padding: 0.5rem 0.75rem;
-  border-radius: 4px;
+const SignOutButton = styled(Button)`
   font-size: 0.75rem;
-  cursor: pointer;
-  transition: background 0.2s;
-
-  &:hover {
-    background: ${({ theme }) => theme.colors.primary[500]};
-  }
+  padding: 0.5rem 0.75rem;
 `;
 
 const MainContent = styled.div`
@@ -56,120 +35,17 @@ const MainContent = styled.div`
   gap: 1rem;
 `;
 
-const Card = styled.div<{ height?: number }>`
-  background: ${({ theme }) => theme.colors.background.secondary};
-  padding: 1.5rem 2rem;
-  border-radius: 12px;
-  border: 1px solid ${({ theme }) => theme.colors.primary[800]};
-  text-align: center;
-  min-width: 400px;
-  height: ${({ height }) => (height ? `${height}px` : "auto")};
-`;
-
-const LargeValue = styled.div<{ variant?: "orange" | "blue" | "white" }>`
-  font-size: 2.5rem;
-  font-weight: bold;
-  line-height: 1.4;
-  color: ${({ variant, theme }) => {
-    switch (variant) {
-      case "orange":
-        return theme.colors.bitcoinOrange;
-      case "blue":
-        return theme.colors.primary[300];
-      default:
-        return theme.colors.white;
-    }
-  }};
-  letter-spacing: normal;
-`;
-
-const Label = styled.div`
-  font-size: 1rem;
-  color: ${({ theme }) => theme.colors.text.secondary};
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
 const ButtonContainer = styled.div`
   display: flex;
   gap: 1rem;
 `;
 
-const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background: ${({ theme }) => theme.colors.primary[800]};
-  margin: 1rem 0;
-`;
-
-const GameButton = styled.button`
-  color: white;
-  background: ${({ theme }) => theme.colors.primary[600]};
-  border: none;
+const GameButton = styled(Button)`
   padding: 1rem 1.5rem 1rem 1rem;
-  border-radius: 8px;
-  font-size: 1.25rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  min-width: 120px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   gap: 0.5rem;
-
-  &:hover {
-    background: ${({ theme }) => theme.colors.primary[500]};
-  }
+  font-size: 20px;
+  font-weight: 600;
 `;
-
-interface GuessStatusProps {
-  guess: Guess;
-  priceAtGuess: number;
-  secondsElapsed: number;
-}
-
-function GuessStatus({
-  guess,
-  priceAtGuess,
-  secondsElapsed,
-}: GuessStatusProps) {
-  return (
-    <Card>
-      <Label>Your Guess</Label>
-      <LargeValue>{guess.charAt(0).toUpperCase() + guess.slice(1)}</LargeValue>
-
-      <Divider />
-
-      <Label>Price at Guess</Label>
-      <LargeValue variant="orange">
-        $
-        {priceAtGuess.toLocaleString("en-US", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })}
-      </LargeValue>
-
-      <Divider />
-
-      {secondsElapsed < SECONDS_TO_RESOLVE_GUESS ? (
-        <>
-          <Label>Time Remaining</Label>
-          <LargeValue variant="blue">
-            {SECONDS_TO_RESOLVE_GUESS - secondsElapsed}s
-          </LargeValue>
-        </>
-      ) : (
-        <>
-          <Label>Waiting for bitcoin price to change...</Label>
-        </>
-      )}
-    </Card>
-  );
-}
 
 interface GameScreenProps {
   authedUser: AuthUser;
@@ -189,28 +65,30 @@ function GameScreen({
   secondsElapsed,
 }: GameScreenProps) {
   return (
-    <Container>
-      <Header>
-        <UserEmail>{authedUser.email}</UserEmail>
+    <PageContainer>
+      <AuthHeader>
+        <Label lowercase fontSize="small">
+          {authedUser.email}
+        </Label>
         <SignOutButton onClick={onSignOut}>Sign Out</SignOutButton>
-      </Header>
+      </AuthHeader>
 
       <MainContent>
         <Card>
-          <Label>Current Score</Label>
-          <LargeValue>{user.score}</LargeValue>
+          <Label>Your Score</Label>
+          <Value>{user.score}</Value>
         </Card>
 
         <Card>
           <Label>Bitcoin Price</Label>
-          <LargeValue variant="orange">
+          <Value variant="orange">
             {bitcoinPrice
               ? `$${bitcoinPrice.price.toLocaleString("en-US", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}`
               : "Loading..."}
-          </LargeValue>
+          </Value>
           {bitcoinPrice && (
             <Timestamp date={bitcoinPrice.timestamp} prefix="Last updated:" />
           )}
@@ -236,7 +114,7 @@ function GameScreen({
           </ButtonContainer>
         )}
       </MainContent>
-    </Container>
+    </PageContainer>
   );
 }
 

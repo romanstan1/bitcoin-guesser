@@ -1,6 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import styled from "styled-components";
-import Text from "./components/Text";
 import LoginScreen from "./components/LoginScreen";
 import GameScreen from "./components/GameScreen";
 import {
@@ -15,17 +13,9 @@ import {
 } from "./services";
 import { type User as AuthUser } from "firebase/auth";
 import { type User, type BitcoinPriceData } from "./services";
+import LoadingSkeleton from "./components/LoadingSkeleton";
 
 export const SECONDS_TO_RESOLVE_GUESS = 30;
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 2rem;
-`;
 
 function App() {
   const [authedUser, setAuthedUser] = useState<AuthUser | null>(null);
@@ -218,13 +208,7 @@ function App() {
   }, [user?.lastGuessTime, hasResolvedGuess, handleResolveGuess]);
 
   if (loading) {
-    return (
-      <Container>
-        <Text variant="p1" color="#94A3B8">
-          Loading...
-        </Text>
-      </Container>
-    );
+    return <LoadingSkeleton />;
   }
 
   if (authedUser && user) {

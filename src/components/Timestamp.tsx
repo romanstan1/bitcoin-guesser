@@ -18,12 +18,10 @@ interface TimestampProps {
 
 function Timestamp({ date, prefix = "", className }: TimestampProps) {
   const dateObj = typeof date === "string" ? new Date(date) : date;
-  const formattedDate = dateObj.toLocaleString();
-
   return (
     <TimestampContainer className={className}>
       {prefix && `${prefix} `}
-      {formattedDate}
+      {dateObj.toLocaleTimeString()}
     </TimestampContainer>
   );
 }

@@ -1,38 +1,4 @@
-import styled from "styled-components";
-import Text from "./Text";
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 2rem;
-`;
-
-const SignInButton = styled.button`
-  background: #4285f4;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  transition: background-color 0.2s;
-
-  &:hover {
-    background: #3367d6;
-  }
-
-  &:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-  }
-`;
+import { Label, PageContainer, Button } from "./styled";
 
 interface LoginScreenProps {
   onSignIn: () => void;
@@ -40,11 +6,9 @@ interface LoginScreenProps {
 
 function LoginScreen({ onSignIn }: LoginScreenProps) {
   return (
-    <Container>
-      <Text variant="h1" color="#00D2FF">
-        E Pilot
-      </Text>
-      <SignInButton onClick={onSignIn}>
+    <PageContainer>
+      <Label marginBottom="2rem">Let's guess the Bitcoin price!</Label>
+      <Button onClick={onSignIn}>
         <svg width="20" height="20" viewBox="0 0 24 24">
           <path
             fill="currentColor"
@@ -64,8 +28,8 @@ function LoginScreen({ onSignIn }: LoginScreenProps) {
           />
         </svg>
         Sign in with Google
-      </SignInButton>
-    </Container>
+      </Button>
+    </PageContainer>
   );
 }
 
