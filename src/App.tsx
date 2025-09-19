@@ -189,10 +189,11 @@ function App() {
       return;
     }
 
+    const guessTimestamp = new Date(user.lastGuessTime).getTime();
+
     const updateTimer = () => {
-      const guessDate = new Date(user.lastGuessTime!);
-      const now = new Date();
-      const elapsed = Math.floor((now.getTime() - guessDate.getTime()) / 1000);
+      // Use cached timestamp
+      const elapsed = Math.floor((Date.now() - guessTimestamp) / 1000);
       setSecondsElapsed(elapsed);
 
       // Trigger resolve after 60 seconds
